@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="availableLanguages" content="en-US">
+    <meta name="defaultLanguage" content="en-US">
+    <!-- TODO: Don't allow img-src *, needed for favicons -->
+    <!-- TODO: Refactor away all unsafe-inline content -->
+    <!-- TODO: Replace suggestqueries.google.com and ac.duckduckgo.com with a single config search engine -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; form-action 'none'; referrer no-referrer; script-src 'self' http://localhost:*; connect-src 'self' http://localhost:* ws://localhost:* https://suggestqueries.google.com https://ac.duckduckgo.com; style-src 'unsafe-inline'; font-src 'self' http://localhost:*; img-src 'self' * data:; object-src 'self'; plugin-types application/browser-plugin">
+    <title>Brave</title>
+    <script src="index-load-script.js" defer></script>
+    <script src="ext/l20n.min.js" async></script>
+    <link rel="localization" href="locales/{locale}/app.properties">
+    <link rel="localization" href="locales/{locale}/menu.properties">
+    <link rel="localization" href="locales/{locale}/downloads.properties">
+  </head>
+  <body>
+    <div id="windowContainer">
+      <div id="webpackLoading" style="display:none">
+        <p>
+          <span>Loading...</span>
+        </p>
+      </div>
+      <div id="setupError" style="display:none">
+        <p>
+          <span>Please make sure the webpack devserver is running via:</span><br>
+          <code>npm run watch</code>
+        </p>
+
+        <p>
+          <span>Please consult the repository's README for more information:</span><br>
+          <a href="https://github.com/brave/browser-electron/blob/master/README.md">https://github.com/brave/browser-electron/blob/master/README.md</a>
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

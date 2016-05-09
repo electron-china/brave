@@ -1,0 +1,353 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+/**
+ * Navigation layers
+ */
+
+@import "variables.less";
+
+// On MacOS we need to keep a padding left to avoid overlapping
+// with the window buttons to close/maximize/minimize the window.
+.platform--darwin .navigatorWrapper .backforward {
+  margin-left: 70px;
+}
+
+
+// Here I grouped the rules to keep the layout of the top bar consistent.
+// The tricky part is to keep the title in `#navigator` centered when the
+// box on its left has different size than the one on the right.
+// This is achieved by the local variable `@centerOffset`.
+.navigatorWrapper {
+  @buttonSpacing: 4px;
+  @buttonWidth: 35px;
+  @braveButtonWidth: 23px;
+  @margin: 70px;
+
+  // Since we want to keep the navigator centered, we need to calculate the
+  // difference between the width of the left box and the width of the right box.
+  @centerOffset: @margin + 2 * (@buttonWidth + @buttonSpacing) // width area on the left
+                 - (@braveButtonWidth + 2 * @buttonSpacing);
+
+  display: flex;
+
+  // Buttons on the left
+  .backforward {
+    display: flex;
+    margin-left: @margin;
+
+    .back,
+    .forward {
+      width: @buttonWidth;
+    }
+
+    .back {
+      padding-right: @buttonSpacing;
+    }
+
+    .forward {
+      padding-left: @buttonSpacing;
+    }
+
+  }
+
+  // Navigation bar at the center
+  #navigator {
+    display: flex;
+    flex-grow: 1;
+    min-width: 0%; // allow the navigator to shrink
+    max-width: 900px;
+
+    &.titleMode {
+      padding-right: @centerOffset;
+    }
+
+    @media (max-width: @breakpointNarrowViewport) {
+      padding-right: 0;
+    }
+
+    @media (max-width: @breakpointNarrowViewport) {
+      width: 100%;
+    }
+
+    &.titleMode {
+      @media (max-width: @breakpointNarrowViewport) {
+        transition: padding @transitionDuration ease-in-out;
+        padding-right: 0;
+      }
+    }
+  }
+
+  // Buttons on the right
+  .topLevelEndButtons {
+
+    .braveMenu {
+      width: @braveButtonWidth;
+      margin-left: @buttonSpacing;
+      margin-right: @buttonSpacing;
+    }
+  }
+}
+
+
+.navigatorWrapper {
+  justify-content: space-between;
+  -webkit-app-region: drag;
+  align-items: center;
+  border-bottom: 1px solid #aaaaaa;
+  height: @navbarHeight;
+  box-sizing: border-box;
+
+  /**
+   * Left buttons
+   */
+  .backforward {
+    display: flex;
+    z-index: 10;
+
+    transition: margin @transitionDuration ease-in-out;
+
+    span {
+      color: @buttonColor;
+      border-radius: 50%;
+      font-weight: 300;
+      opacity: 0.2;
+
+      &:not([disabled]) {
+        opacity: 0.85;
+      }
+
+      &:not([disabled]):hover {
+        color: @buttonColor;
+        opacity: 1.0;
+        background-color: white;
+      }
+    }
+
+    .back,
+    .forward {
+      font-size: 35px;
+      text-align: center;
+    }
+  }
+}
+
+.urlbarForm {
+  align-items: center;
+  justify-content: center;
+  height: 24px;
+  padding: 0 10px;
+
+  display: flex;
+  flex-grow: 1;
+  min-width: 0%; // allow the navigator to shrink
+  position: relative;
+
+  *:not(legend) {
+    z-index: 1;
+  }
+
+  input:focus + legend:before {
+    content: ' ';
+    position: absolute;
+    background: #fff;
+    border: 2px solid @focusUrlbarOutline;
+    border-radius: 4px;
+    box-shadow: 0 0 1px @focusUrlbarOutline, inset 0 0 2px @focusUrlbarOutline;
+    box-shadow: inset 0 1px 8px rgba(0, 137, 255, 0.5);
+    color: #333;
+    outline: none;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    z-index: 0;
+  }
+
+  #navigator:not(.titleMode) & {
+    background: white;
+    border-radius: @borderRadiusURL;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,0.3);
+    color: @chromeText;
+  }
+}
+
+#navigator {
+  font-size: 20px;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 0;
+  position: relative;
+  -webkit-user-select: none;
+
+  z-index: 99999;
+
+  form {
+    -webkit-app-region: drag;
+    // Disable window dragging so that selecting text and dragging the favicon is possible.
+    input, .urlbarIcon {
+      -webkit-app-region: no-drag;
+    }
+  }
+
+  &.titleMode {
+    input {
+      display: none;
+    }
+    #titleBar {
+      display: inline-block;
+      background:rgba(243, 243, 243, 0);
+      color: @chromeText;
+      font-size: 15px;
+      max-width: 100%;
+      overflow-x: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .endButtons {
+      position: absolute;
+      top: -2px;
+    }
+
+    .urlbarIcon {
+      display: inline-block;
+      opacity: 0.4;
+      position: relative;
+      left: 2px;
+      min-width: 0;
+
+      &[class*=" fa-"] {
+        margin-right: 5px;
+        margin-top: 3px;
+        font-size: 14px;
+        min-height: 12px;
+        color: @chromeText;
+        min-width: 14px;
+      }
+    }
+
+    .bookmark-button {
+      transform: scale(0.6);
+      opacity: 0.6;
+      text-align: left;
+
+      &:not(.remove-bookmark-button) {
+        display: none;
+      }
+    }
+  }
+
+  #titleBar {
+    display: none;
+    text-overflow: ellipsis;
+  }
+
+  .loadTime {
+    color: @loadTimeColor;
+    font-size: 12px;
+    right: 10px;
+    text-align: right;
+    margin: 4px 0 0 0;
+    top: 9px;
+  }
+
+  .noScript {
+    color: @braveOrange;
+    font-size: 17px;
+    cursor: pointer;
+    top: 10px;
+    margin-right: 5px;
+    &:hover {
+      opacity: 0.5;
+    }
+  }
+
+  /* Disable selection of button text */
+  > span {
+     -webkit-user-select: none;
+  }
+
+  > * {
+    -webkit-app-region: no-drag;
+  }
+
+  .inputbar-wrapper {
+    background: white;
+    display: flex;
+    flex: 1 1 0;
+    border-radius: 4px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  input {
+    background: @navigationBarBackground;
+    border: none;
+    box-sizing: border-box;
+    color: @chromeText;
+    cursor: text;
+    font-size: @defaultFontSize;
+    font-weight: normal;
+    margin: 3px 10px 0 3px;
+    outline: none;
+    text-overflow: ellipsis;
+    flex-grow: 1;
+    min-width: 0%; // allow the navigator to shrink
+
+    &:hover {
+      background: @chromeControlsBackground2;
+    }
+
+
+    &.private {
+      background: @privateTabBackground;
+      color: @chromeText;
+    }
+  }
+
+  span.navbutton.remove-bookmark-button {
+    color: @braveOrange;
+    opacity: 1;
+  }
+
+  .urlbarIcon.fa-unlock-alt {
+    margin-top: 4px;
+    font-size: 16px;
+    min-height: 10px;
+    min-width: 16px;
+  }
+
+  .urlbarIcon.fa-lock {
+    margin-top: 4px;
+    font-size: 16px;
+    min-height: 10px;
+    min-width: 16px;
+  }
+
+  .urlbarIcon {
+    color: @focusUrlbarOutline;
+    left: 14px;
+    margin-top: 1px;
+    font-size: 13px;
+    min-height: 10px;
+    min-width: 16px;
+
+    &.extendedValidation {
+      color: green;
+    }
+  }
+}
+
+
+.topLevelEndButtons .braveMenu {
+  background-image: -webkit-image-set(url(../app/extensions/brave/img/braveBtn.png) 1x,
+                                      url(../app/extensions/brave/img/braveBtn2x.png) 2x,
+                                      url(../app/extensions/brave/img/braveBtn3x.png) 3x);
+  background-repeat: no-repeat;
+  height: 27px;
+  margin-top: 3px;
+}
+
